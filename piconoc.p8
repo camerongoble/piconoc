@@ -116,9 +116,12 @@ function(e)
   if (e.pos.x <= 0) e.pos.x = sw
   if (e.pos.y >= sh) e.pos.y = 0
   if (e.pos.y <= 0) e.pos.y = sh
- elseif b=="bounce" then -- reflect back along a single axis
+ elseif b=="bounce" then -- reflect back along the relevant axis
   if (e.pos.x >= sw or e.pos.x <= 0) e.vel.x *= -1
   if (e.pos.y >= sh or e.pos.y <= 0) e.vel.y *= -1
+ elseif b=="bonk" then -- no passage, just bonk into it
+  e.pos.x = mid(1,e.pos.x,sw-1)
+  e.pos.y = mid(1,e.pos.y,sh-1)
  end
 end
 )

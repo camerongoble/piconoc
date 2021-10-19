@@ -1,7 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 33
 __lua__
--- ecosystem
+-- piconoc ecosystem
 -- by cameron goble
 -- an implementation of "nature of code"
 -- by daniel schiffman which
@@ -28,6 +28,7 @@ __lua__
 
 -->8
 -- main loop
+
 #include libs/ecs.lua
 #include libs/1-vectors.lua
 
@@ -38,12 +39,13 @@ function _init()
    d=create_vector(0,1),
    l=create_vector(-1,0),
    r=create_vector(1,0),
+   stationary=create_vector(0,0),
    ul=create_vector(-1,-1),
    dl=create_vector(-1,1),
    ur=create_vector(1,-1),
    dr=create_vector(1,1)
  }
- dir={"u", "d", "l", "r", "ul", "dl", "ur", "dr"}
+ dir={"u", "d", "l", "r", "stationary", "ul", "dl", "ur", "dr"}
  init_world()
 end
 
@@ -85,12 +87,13 @@ end
 -->8
 -- ecs update and draw systems
 
--- draw an object with a position if visible
+-- draw each critter according to its particulars
 draw_position = system({"pos"},
 function(e)
  if (e.visible) e:draw()
 end)
 
+-- Allows for particular update conditions per critter
 update_selves = system({"update"},
 function(e)
  e:update()
@@ -98,6 +101,8 @@ end
 )
 
 -- add object velocities to positions
+-- adjust for screen boundary encounters
+-- note: creatures have different behaviors against the boundary
 resolve_position = system({"pos", "vel"},
 function(e)
  e.pos:add_vector(e.vel)
@@ -107,9 +112,12 @@ function(e)
   if (e.pos.x <= 0) e.pos.x = sw
   if (e.pos.y >= sh) e.pos.y = 0
   if (e.pos.y <= 0) e.pos.y = sh
- elseif b=="bounce" then -- reflect back along a single axis
+ elseif b=="bounce" then -- reflect back along the relevant axis
   if (e.pos.x >= sw or e.pos.x <= 0) e.vel.x *= -1
   if (e.pos.y >= sh or e.pos.y <= 0) e.vel.y *= -1
+ elseif b=="bonk" then -- no passage, just bonk into it
+  e.pos.x = mid(1,e.pos.x,sw-1)
+  e.pos.y = mid(1,e.pos.y,sh-1)
  end
 end
 )
@@ -129,8 +137,10 @@ end
 )
 
 -->8
+-- animals
+
 -- animal: fly
--- behaviors:
+-- features:
 -- flies are tiny.
 -- flies make little sounds. **not yet implemented**
 -- flies randomly hover around in all directions.
@@ -146,9 +156,10 @@ function spawn_fly(n)
    pos = create_vector(x, y),
    vel = create_vector(0, 0),
    acc = create_vector(0,0),
-   maxspeed = 1, --always in pixels per frame
+   maxspeed = rnd(1), --always in pixels per frame
    -- flies bonk against the window infuriatingly.
-   boundary_behavior = "bounce",
+   -- (see resolve_position())
+   boundary_behavior = "bonk",
    -- main loop functions
    draw = _draw_fly,
    update = _update_fly
@@ -163,10 +174,25 @@ function _draw_fly(self)
 end
 
 function _update_fly(self)
- -- flies randomly hover around in all directions.
- -- flies sometimes move fast, other times they linger.
+   -- flies randomly hover around in all directions.
   local d=rnd(dir)
   self.acc:add_vector(dir_vecs[d])
+   -- flies sometimes move fast, other times they linger.
+  if self.feeling_swoopy then
+   -- countdown to not be swoopy any more
+   self.feeling_swoopy -= 1
+   if self.feeling_swoopy == 0 then
+    printh("less than swoopy")
+    self.feeling_swoopy = nil
+    self.maxspeed = rnd(1)
+   end
+  elseif flr(rnd(180))==1 then
+   -- let's get swoopy!
+   printh("SWOOP")
+   self.feeling_swoopy = flr(rnd(15)+15)
+   self.maxspeed = rnd(3)+1
+   end
+
 end
 
 __gfx__
