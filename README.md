@@ -24,6 +24,12 @@ piconoc uses the simple PECS system by Jess Telford (https://github.com/jesstelf
 ECS gets around Pico-8's avoidance of proper objects in a really clever way.  Basically, if a table has a field that contains a particular type of data, like a position, then a system can be set up that acts on all that data in the same way.  Adding new, independently acting entities is as simple as creating a new entry in a table.  It seems a perfect fit for a project like this.
 
 ## Ecosystem
-By harnessing the systems that ECS makes possible with the emergent properties behind Nature of Code, I want to be able to create little ecosystems where virtual critters can live and interact.  
+By harnessing the systems that ECS makes possible with the emergent properties behind Nature of Code, I want to be able to create little ecosystems where virtual critters can live and interact without a lot of deliberate AI backing them up.  Some will be predators, some will be prey, others will just hang around.  
 
-Run ecosystem.p8 in Pico-8 to see the result.
+Critters in progress:
+* flies
+* frogs
+* rabbits
+* snakes
+
+Run ecosystem.p8 in Pico-8 to see the results.
