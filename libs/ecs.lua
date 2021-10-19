@@ -1,4 +1,4 @@
--- Entity Componet System
+-- Entity Component System
 -- See https://www.lexaloffle.com/bbs/?tid=30039
 
 function _has(e, ks)
