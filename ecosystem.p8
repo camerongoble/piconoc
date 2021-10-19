@@ -182,13 +182,11 @@ function _update_fly(self)
    -- countdown to not be swoopy any more
    self.feeling_swoopy -= 1
    if self.feeling_swoopy == 0 then
-    printh("less than swoopy")
     self.feeling_swoopy = nil
     self.maxspeed = rnd(1)
    end
   elseif flr(rnd(180))==1 then
    -- let's get swoopy!
-   printh("SWOOP")
    self.feeling_swoopy = flr(rnd(15)+15)
    self.maxspeed = rnd(3)+1
    end
