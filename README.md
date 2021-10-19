@@ -32,4 +32,4 @@ Critters in progress:
 * rabbits
 * snakes
 
-Run ecosystem.p8 in Pico-8 to see the results.
+Run ecosystem.p8 in Pico-8 to see the results.  Hopefully you can tell which is which from their behaviors, since they are all simple dots, not pixel art.
