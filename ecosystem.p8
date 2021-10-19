@@ -20,7 +20,7 @@ __lua__
 -- the real-world behavior of a creature,
 -- such as a nervous fly, swimming fish,
 -- hopping bunny, slithering snake, etc.
--- Can you control the object’s motion by
+-- Can you control the objectヌ█▥s motion by
 -- only manipulating the acceleration? Try
 -- to give the creature a personality
 -- through its behavior (rather than
@@ -50,12 +50,15 @@ function _init()
 end
 
 function _update()
+ captions = {txt_lines = {"houseflies"}, color=6}
  update_world()
 end
 
 function _draw()
  cls()
  draw_world()
+ draw_captions()
+
 end
 
 -->8
@@ -68,8 +71,29 @@ function init_world()
  add(world, origin)
  add(world, center)
  -- populate world with critters
- spawn_fly(25)
+ spawn_fly(10)
 end
+
+
+function add_caption(txt)
+ -- here adds a line of text for display during an event
+ -- more default functionality could go here, like
+ -- default time-to-live or colors.
+ add(captions.txt_lines, txt)
+end
+
+function draw_captions()
+ local n = #captions.txt_lines
+ local fh = 6 --font height
+ local y = 128 - (n*fh)
+ for i = 1,n do
+  print(captions.txt_lines[i], 1, y, captions.color)
+  y += fh
+ end
+
+
+end
+
 
 function update_world()
  reset_acceleration(world)
@@ -91,7 +115,8 @@ end
 draw_position = system({"pos"},
 function(e)
  if (e.visible) e:draw()
-end)
+end
+)
 
 -- Allows for particular update conditions per critter
 update_selves = system({"update"},
@@ -108,16 +133,19 @@ function(e)
  e.pos:add_vector(e.vel)
  local b = e.boundary_behavior or "none"
  if b=="wrap" then -- pass through the edge
-  if (e.pos.x >= sw) e.pos.x = 0
-  if (e.pos.x <= 0) e.pos.x = sw
-  if (e.pos.y >= sh) e.pos.y = 0
-  if (e.pos.y <= 0) e.pos.y = sh
+  if (e.pos.x >= sw-1) e.pos.x = 1
+  if (e.pos.x <= 1) e.pos.x = sw-1
+  if (e.pos.y >= sh-1) e.pos.y = 1
+  if (e.pos.y <= 1) e.pos.y = sh-1
  elseif b=="bounce" then -- reflect back along the relevant axis
-  if (e.pos.x >= sw or e.pos.x <= 0) e.vel.x *= -1
-  if (e.pos.y >= sh or e.pos.y <= 0) e.vel.y *= -1
- elseif b=="bonk" then -- no passage, just bonk into it
-  e.pos.x = mid(1,e.pos.x,sw-1)
-  e.pos.y = mid(1,e.pos.y,sh-1)
+  if (e.pos.x >= sw-1 or e.pos.x <= 1) e.vel.x *= -1
+  if (e.pos.y >= sh-1 or e.pos.y <= 1) e.vel.y *= -1
+ elseif b=="bonk" then -- no passage, just stop right there
+  if (e.pos.x >= sw-1) or (e.pos.x <= 1) or (e.pos.y >= sh-1) or (e.pos.y <= 1) then
+   if (e.boundary_sfx) sfx(e.boundary_sfx)
+   e.pos.x = mid(1,e.pos.x,sw-1)
+   e.pos.y = mid(1,e.pos.y,sh-1)
+  end
  end
 end
 )
@@ -139,10 +167,10 @@ end
 -->8
 -- animals
 
--- animal: fly
+-- animal: housefly
 -- features:
 -- flies are tiny.
--- flies make little sounds. **not yet implemented**
+-- flies make annoying little sounds.
 -- flies randomly hover around in all directions.
 -- flies sometimes move fast, other times they linger.
 -- flies bonk against the window infuriatingly.
@@ -160,6 +188,8 @@ function spawn_fly(n)
    -- flies bonk against the window infuriatingly.
    -- (see resolve_position())
    boundary_behavior = "bonk",
+   -- flies make annoying little sounds.
+   boundary_sfx = 9,
    -- main loop functions
    draw = _draw_fly,
    update = _update_fly
@@ -200,3 +230,14 @@ __gfx__
 00077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00700700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+000100001d330060702b3100a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000200001e0302b0102d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
