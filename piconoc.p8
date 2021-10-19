@@ -112,13 +112,13 @@ function(e)
  e.pos:add_vector(e.vel)
  local b = e.boundary_behavior or "none"
  if b=="wrap" then -- pass through the edge
-  if (e.pos.x > sw) e.pos.x = 0
-  if (e.pos.x < 0) e.pos.x = sw
-  if (e.pos.y > sh) e.pos.y = 0
-  if (e.pos.y < 0) e.pos.y = sh
+  if (e.pos.x >= sw) e.pos.x = 0
+  if (e.pos.x <= 0) e.pos.x = sw
+  if (e.pos.y >= sh) e.pos.y = 0
+  if (e.pos.y <= 0) e.pos.y = sh
  elseif b=="bounce" then -- reflect back along a single axis
-  if (e.pos.x > sw or e.pos.x < 0) e.vel.x *= -1
-  if (e.pos.y > sh or e.pos.y < 0) e.vel.y *= -1
+  if (e.pos.x >= sw or e.pos.x <= 0) e.vel.x *= -1
+  if (e.pos.y >= sh or e.pos.y <= 0) e.vel.y *= -1
  end
 end
 )

@@ -32,7 +32,7 @@ end
 
 function add_force(e,fv)
   -- adds force vector to an entity's acceleration
-  -- simple function written for code readability
+  -- simple function written here for code readability
   -- can be called multiple times per frame
   -- forces combine to single acceleration
   e.acc:add_vector(fv)
