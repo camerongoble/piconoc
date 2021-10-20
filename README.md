@@ -4,12 +4,14 @@ Emergent ecosystem behaviors for agents in Pico-8.  Based on Daniel Schiffman's 
 
 Hi!  I want to simulate flies and frogs and lizards and spaceships and such in PICO-8.  And I want to do so in ways that give surprising results.  PLUS I want to refine my understanding of Entity Component Systems (ECS).  This repo holds my efforts to do all those things.  This is a learning project in process.
 
+Play in browser here: https://www.lexaloffle.com/bbs/?tid=45052
+
 ## Nature of Code
 Daniel Schiffman has a fantastic video series (and a free online book!) called Nature of Code (https://natureofcode.com) that explains how to do this in Processing.  Autonomous Agents and Cellular Automata are particularly interesting, but they depend on a lot of preliminary work with vectors and forces and things.  I'm translating that work into Pico-8.
 
 This project is divided into chapters that follow the book.  These are in /libs. The code is liberally commented and played with in piconoc.p8 as proofs-of-concept.
 
-Topics of interest (some, but not all implemented yet): 
+Topics of interest (some, but not all implemented yet):
 * Vectors
 * Forces
 * Occilations
@@ -32,4 +34,4 @@ Critters in progress:
 * rabbits
 * snakes
 
-Run ecosystem.p8 in Pico-8 to see the results.  Hopefully you can tell which is which from their behaviors, since they are all simple dots, not pixel art.
+Run ecosystem.p8 in Pico-8 to see the results.  Or play in your browser at https://www.lexaloffle.com/bbs/?tid=45052 ) Hopefully you can tell which is which from their behaviors, since they are all simple dots, not pixel art.
