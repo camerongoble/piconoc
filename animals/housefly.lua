@@ -22,7 +22,7 @@ function spawn_fly(n)
    -- (see resolve_position())
    boundary_behavior = "bonk",
    -- flies make annoying little sounds.
-   boundary_sfx = 9,
+   sfx = {boundary={patch=9, probability=100}}, -- larger numbers mean lower probabilities to play the patch e.g. 1 in 10
    -- main loop functions
    draw = _draw_fly,
    update = _update_fly

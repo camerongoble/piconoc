@@ -26,7 +26,9 @@ function spawn_frog(n)
    boundary_behavior = "bounce",
    -- main loop functions
    draw = _draw_frog,
-   update = _update_frog
+   update = _update_frog,
+   -- frogs make occasional ribbity soundss.
+   sfx={idle={patch=10, probability = 600}}
   }
   add(world, f)
  end
@@ -39,17 +41,22 @@ function _draw_frog(self)
 end
 
 function _update_frog(self)
-  -- frogs mostly sit still.
+    -- frogs tend to go slowly, if at all
   local hop = self.vel:magnitude()
   if hop > 0 then
+    -- come to a quick halt after a burst of acceleration
     local hop_stop = self.vel:copy_vector()
     hop_stop:scale_vector(-hop/5)
     add_force(self, hop_stop)
   end
   if hop < self.maxspeed /3 then
+    -- if frog is slow enough, just come to a complete halt.
+    -- (stops frogs from drifting)
     self.vel:set_magnitude(0)
   end
-  if rnd(30)<=1 then
+  -- frogs mostly sit still.
+  -- no motion, so maybe start some?
+  if (hop == 0 and rnd(30)<=1) then
     -- frogs occasionally hop in a forward-ish direction.
     -- right now, frogs just hop toward to the uppish.
     -- later we can add frog headings for local directionality
@@ -59,4 +66,6 @@ function _update_frog(self)
     fd:scale_vector(s)
     add_force(self, fd)
   end
+-- frogs make occasional ribbity sounds.
+  play_psfx(self.sfx.idle)
 end
