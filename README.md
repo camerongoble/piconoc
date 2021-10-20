@@ -8,8 +8,9 @@ Play in browser here: https://www.lexaloffle.com/bbs/?tid=45052
 
 ## Instructions
 There are two main files, both using the same libraries but with different goals.
-PICONOC.P8 is a proof-of-concept file, where I develop the various functions and show how they work with diagnostic diagrams.
-ECOSYSTEM.p8 is a sample environment that uses all the functions to simulate life-like behaviors.
+
+PICONOC.P8 is a proof-of-concept file, where I develop the various functions and show how they work with diagnostic diagrams.  (e.g. see how vectors allow objects to be aware of each other's locations.)
+ECOSYSTEM.P8 is a sample environment that uses all the functions together to simulate life-like behaviors. (e.g. Build a frog that wants to hunt for flies.)
 
 Examine piconoc.p8 and fiddle with the debug settings if you want to see how the functions work.
 Examine ecosystem.p8 and create your own data models for critters if you want to enjoy the emergent behaviors that the functions provide.
