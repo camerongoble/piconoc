@@ -95,9 +95,12 @@ function _normvec(self)
 end
 
 function _setmag(self,s)
-  -- modieifes/sets a vector magnitude to scale
-  self:normalize()
-  self:scale_vector(s)
+  -- modifies/sets an existing non-zero vector magnitude to scale
+  if self:magnitude() != 0 then
+    self:normalize()
+    self:scale_vector(s)
+  end
+
 end
 
 function _limitvec(self,s)

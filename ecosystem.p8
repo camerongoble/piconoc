@@ -46,11 +46,11 @@ function _init()
    dr=create_vector(1,1)
  }
  dir={"u", "d", "l", "r", "stationary", "ul", "dl", "ur", "dr"}
+ captions = {txt_lines={}, color = 7}
  init_world()
 end
 
 function _update()
- captions = {txt_lines = {"houseflies"}, color=6}
  update_world()
 end
 
@@ -58,7 +58,6 @@ function _draw()
  cls()
  draw_world()
  draw_captions()
-
 end
 
 -->8
@@ -72,6 +71,7 @@ function init_world()
  add(world, center)
  -- populate world with critters
  spawn_fly(10)
+ spawn_frog(10)
 end
 
 
@@ -90,8 +90,6 @@ function draw_captions()
   print(captions.txt_lines[i], 1, y, captions.color)
   y += fh
  end
-
-
 end
 
 
@@ -138,8 +136,9 @@ function(e)
   if (e.pos.y >= sh-1) e.pos.y = 1
   if (e.pos.y <= 1) e.pos.y = sh-1
  elseif b=="bounce" then -- reflect back along the relevant axis
-  if (e.pos.x >= sw-1 or e.pos.x <= 1) e.vel.x *= -1
-  if (e.pos.y >= sh-1 or e.pos.y <= 1) e.vel.y *= -1
+  if (e.pos.x >= sw-1 or e.pos.x <= 1) e.vel.x *= -1 e.pos.x = mid(1,e.pos.x,sw-1)
+  if (e.pos.y >= sh-1 or e.pos.y <= 1) e.vel.y *= -1 e.pos.y = mid(1,e.pos.y,sh-1)
+  if (e.boundary_sfx) sfx(e.boundary_sfx)
  elseif b=="bonk" then -- no passage, just stop right there
   if (e.pos.x >= sw-1) or (e.pos.x <= 1) or (e.pos.y >= sh-1) or (e.pos.y <= 1) then
    if (e.boundary_sfx) sfx(e.boundary_sfx)
@@ -167,17 +166,11 @@ end
 -->8
 -- animals
 
--- animal: housefly
--- features:
--- flies are tiny.
--- flies make annoying little sounds.
--- flies randomly hover around in all directions.
--- flies sometimes move fast, other times they linger.
--- flies bonk against the window infuriatingly.
-
 -- spawn_fly(n) to add n flies to the world
-
 #include animals/housefly.lua
+
+--spawn_frog(n) to add n frogs to the world
+#include animals/frog.lua
 
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

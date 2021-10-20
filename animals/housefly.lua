@@ -1,3 +1,10 @@
+-- animal: housefly
+-- features:
+-- flies are tiny.
+-- flies make annoying little sounds.
+-- flies randomly hover around in all directions.
+-- flies sometimes move fast, other times they linger.
+-- flies bonk against the window infuriatingly.
 
 function spawn_fly(n)
  for i = 1,n do
@@ -22,6 +29,7 @@ function spawn_fly(n)
   }
   add(world, f)
  end
+ add_caption("+"..n .. " housefiles")
 end
 
 function _draw_fly(self)
