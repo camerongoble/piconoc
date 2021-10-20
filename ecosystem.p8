@@ -130,24 +130,41 @@ resolve_position = system({"pos", "vel"},
 function(e)
  e.pos:add_vector(e.vel)
  local b = e.boundary_behavior or "none"
+ local s = e.sfx.boundary or {}
  if b=="wrap" then -- pass through the edge
-  if (e.pos.x >= sw-1) e.pos.x = 1
-  if (e.pos.x <= 1) e.pos.x = sw-1
-  if (e.pos.y >= sh-1) e.pos.y = 1
-  if (e.pos.y <= 1) e.pos.y = sh-1
+  if (e.pos.x >= sw-1) then e.pos.x = 1 play_psfx(s) end
+  if (e.pos.x <= 1) then e.pos.x = sw-1 play_psfx(s) end
+  if (e.pos.y >= sh-1) then e.pos.y = 1 play_psfx(s) end
+  if (e.pos.y <= 1) then e.pos.y = sh-1 play_psfx(s) end
  elseif b=="bounce" then -- reflect back along the relevant axis
-  if (e.pos.x >= sw-1 or e.pos.x <= 1) e.vel.x *= -1 e.pos.x = mid(1,e.pos.x,sw-1)
-  if (e.pos.y >= sh-1 or e.pos.y <= 1) e.vel.y *= -1 e.pos.y = mid(1,e.pos.y,sh-1)
-  if (e.boundary_sfx) sfx(e.boundary_sfx)
+  if (e.pos.x >= sw-1 or e.pos.x <= 1) then
+   e.vel.x *= -1
+   e.pos.x = mid(1,e.pos.x,sw-1)
+   play_psfx(s)
+  end
+  if (e.pos.y >= sh-1 or e.pos.y <= 1) then
+   e.vel.y *= -1
+   e.pos.y = mid(1,e.pos.y,sh-1)
+   play_psfx(s)
+  end
  elseif b=="bonk" then -- no passage, just stop right there
   if (e.pos.x >= sw-1) or (e.pos.x <= 1) or (e.pos.y >= sh-1) or (e.pos.y <= 1) then
-   if (e.boundary_sfx) sfx(e.boundary_sfx)
+   play_psfx(s)
    e.pos.x = mid(1,e.pos.x,sw-1)
    e.pos.y = mid(1,e.pos.y,sh-1)
   end
  end
 end
 )
+
+play_psfx = function(s)
+ local patch = s.patch or 0
+ local prob = s.probability or 0
+ if rnd(prob)<=1 then
+  sfx(patch)
+ end
+end
+
 
 -- add object accelerations to velocities
 resolve_velocity = system({"vel", "acc"},
@@ -190,3 +207,4 @@ __sfx__
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 000200001e330294102d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0007000001430014200132002430024300234003440054400844011230036401a2300042019220004100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
