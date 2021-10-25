@@ -17,7 +17,7 @@ function create_vector(x,y)
     magnitude = _mag,
     set_magnitude = _setmag,
     normalize = _normvec,
-    limit = _limitvec
+    limit = _limitmag        -- limits to a scaler
   }
   return v
 end
@@ -38,13 +38,18 @@ function add_force(e,fv)
   e.acc:add_vector(fv)
 end
 
-function to_target(sourceobj, targetobj)
+function printh_vec(v,t)
+  local t = t or "vector:"
+  printh(t.." ".. v.x .. ","..v.y )
+end
+
+function to_target(sourcexy, targetxy)
   -- returns a vector to get from source to target
   -- if used as velocity, source arrives in 1 frame
-  local sp = sourceobj.pos:copy_vector()
-  local tp = targetobj.pos:copy_vector()
-  tp:sub_vector(sp)
-  return tp
+  local sp = create_vector(sourcexy.x, sourcexy.y)
+  local tp = create_vector(targetxy.x, targetxy.y)
+  sp:sub_vector(tp)
+  return sp
 end
 
 
@@ -103,7 +108,7 @@ function _setmag(self,s)
 
 end
 
-function _limitvec(self,s)
+function _limitmag(self,s)
   -- modifies/constrains a vector magnitude to a value
   -- no more than scale
   local m = self:magnitude()
