@@ -6,6 +6,16 @@ Hi!  I want to simulate flies and frogs and lizards and spaceships and such in P
 
 Play in browser here: https://www.lexaloffle.com/bbs/?tid=45052
 
+## Instructions
+There are two main files, both using the same libraries but with different goals.
+
+PICONOC.P8 is a proof-of-concept file, where I develop the various functions and show how they work with diagnostic diagrams.  (e.g. see how vectors allow objects to be aware of each other's locations.)
+
+ECOSYSTEM.P8 is a sample environment that uses all the functions together to simulate life-like behaviors. (e.g. Build a frog that wants to hunt for flies.)
+
+Examine piconoc.p8 and fiddle with the debug settings if you want to see how the functions work.
+Examine ecosystem.p8 and create your own data models for critters if you want to enjoy the emergent behaviors that the functions provide.
+
 ## Nature of Code
 Daniel Schiffman has a fantastic video series (and a free online book!) called Nature of Code (https://natureofcode.com) that explains how to do this in Processing.  Autonomous Agents and Cellular Automata are particularly interesting, but they depend on a lot of preliminary work with vectors and forces and things.  I'm translating that work into Pico-8.
 
