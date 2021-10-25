@@ -139,32 +139,50 @@ resolve_position = system({"pos", "vel"},
 function(e)
  e.pos:add_vector(e.vel)
  local b = e.boundary_behavior or "none"
- local s = e.sfx.boundary or {}
- if b=="wrap" then -- pass through the edge
-  if (e.pos.x >= sw-1) then e.pos.x = 1 play_psfx(s) end
-  if (e.pos.x <= 1) then e.pos.x = sw-1 play_psfx(s) end
-  if (e.pos.y >= sh-1) then e.pos.y = 1 play_psfx(s) end
-  if (e.pos.y <= 1) then e.pos.y = sh-1 play_psfx(s) end
- elseif b=="bounce" then -- reflect back along the relevant axis
-  if (e.pos.x >= sw-1 or e.pos.x <= 1) then
-   e.vel.x *= -1
-   e.pos.x = mid(1,e.pos.x,sw-1)
-   play_psfx(s)
-  end
-  if (e.pos.y >= sh-1 or e.pos.y <= 1) then
-   e.vel.y *= -1
-   e.pos.y = mid(1,e.pos.y,sh-1)
-   play_psfx(s)
-  end
- elseif b=="bonk" then -- no passage, just stop right there
-  if (e.pos.x >= sw-1) or (e.pos.x <= 1) or (e.pos.y >= sh-1) or (e.pos.y <= 1) then
-   play_psfx(s)
-   e.pos.x = mid(1,e.pos.x,sw-1)
-   e.pos.y = mid(1,e.pos.y,sh-1)
-  end
+
+ if b=="wrap" then
+  _wrap(e)
+ elseif b=="bounce" then
+  _bounce(e)
+ elseif b=="bonk" then
+  _bonk(e)
  end
 end
 )
+
+function _bounce(e)
+ -- reflect perflectly back along the relevant axis
+  local s = e.sfx.boundary or {}
+ if (e.pos.x >= sw-1 or e.pos.x <= 1) then
+  e.vel.x *= -1
+  e.pos.x = mid(1,e.pos.x,sw-1)
+  play_psfx(s)
+ end
+ if (e.pos.y >= sh-1 or e.pos.y <= 1) then
+  e.vel.y *= -1
+  e.pos.y = mid(1,e.pos.y,sh-1)
+  play_psfx(s)
+ end
+end
+
+function _wrap(e)
+ -- pass through the edge
+  local s = e.sfx.boundary or {}
+ if (e.pos.x >= sw-1) then e.pos.x = 1 play_psfx(s) end
+ if (e.pos.x <= 1) then e.pos.x = sw-1 play_psfx(s) end
+ if (e.pos.y >= sh-1) then e.pos.y = 1 play_psfx(s) end
+ if (e.pos.y <= 1) then e.pos.y = sh-1 play_psfx(s) end
+end
+
+function _bonk(e)
+ -- no passage, just stop right there
+  local s = e.sfx.boundary or {}
+ if (e.pos.x >= sw-1) or (e.pos.x <= 1) or (e.pos.y >= sh-1) or (e.pos.y <= 1) then
+  play_psfx(s)
+  e.pos.x = mid(1,e.pos.x,sw-1)
+  e.pos.y = mid(1,e.pos.y,sh-1)
+ end
+end
 
 
 
