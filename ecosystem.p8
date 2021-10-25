@@ -73,7 +73,7 @@ function init_world()
  add(world, origin)
  add(world, center)
  -- populate world with critters
- spawn_fly(10)
+ --spawn_fly(10)
  spawn_frog(1)
 end
 
@@ -139,19 +139,22 @@ resolve_position = system({"pos", "vel"},
 function(e)
  e.pos:add_vector(e.vel)
  local b = e.boundary_behavior or "none"
-
- if b=="wrap" then
-  _wrap(e)
- elseif b=="bounce" then
-  _bounce(e)
- elseif b=="bonk" then
-  _bonk(e)
+ if type(b) == "string" then
+  if b=="wrap" then
+   _wrap(e)
+  elseif b=="bounce" then
+   _bounce(e)
+  elseif b=="bonk" then
+   _bonk(e)
+  end
+ elseif type(b) == "function" then
+  b(e)
  end
 end
 )
 
 function _bounce(e)
- -- reflect perflectly back along the relevant axis
+ -- reflect perfectly back along the relevant axis
   local s = e.sfx.boundary or {}
  if (e.pos.x >= sw-1 or e.pos.x <= 1) then
   e.vel.x *= -1
