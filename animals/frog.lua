@@ -42,7 +42,23 @@ end
 
 function _draw_frog(self)
   -- frogs are larger than flies.
+  local trunk = self.size * 1.5
+  local stretch = self.size * 1.3
+  if self.vel:magnitude() > 0 then
+    if self.dist_traveled <= stretch then
+      -- the butt is still at the start point
+      circfill(self.start.x, self.start.y, trunk, self.color)
+    elseif self.dist_traveled > stretch then
+      -- the butt needs to catch up
+      local butt = self.vel:copy_vector() -- which way are we going?
+      butt:limit(3) -- no more than some px lengths
+      butt:scale_vector(-1) -- in the opposite direction
+      butt:add_vector(self.pos) -- to the frog's current position
+      circfill(butt.x, butt.y, s, self.color)
+    end
+  end
   circfill(self.pos.x, self.pos.y, self.size, self.color)
+
 end
 
 function hop(self)
