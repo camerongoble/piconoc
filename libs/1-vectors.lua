@@ -134,7 +134,8 @@ end
 function _vectors_update()
   -- generate some interesting sample accelerations to play with
   local rv = create_random_vector() -- nudge in some random direction
-  local tv = to_target(ball, ball.target)
+  local tv = to_target(ball.pos, ball.target.pos)
+  tv:scale_vector(-1)
   tv:normalize() -- nudge toward target
   -- apply player input to the ball
   if btnp(❎) then add_force(ball, rv)  --random force

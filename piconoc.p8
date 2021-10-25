@@ -177,15 +177,16 @@ end
 debug_to_target = system({"pos", "vel", "target"},
 function(e)
  local col = 6
- local tp = e.target.pos
- local tv = to_target(e, e.target)
+ local ep = e.pos:copy_vector()
+ local tp = e.target.pos:copy_vector()
+ local tv = to_target(ep, tp)
  print(tv:magnitude(), tp.x + 4, tp.y + 4, col)
  tv:normalize()
  tv:scale_vector(10)
- line(e.pos.x, e.pos.y, e.pos.x+tv.x, e.pos.y+tv.y, col)
+ line(ep.x, ep.y, ep.x-tv.x, ep.y-tv.y, col)
  -- absolute line end positions based on target calcs
  -- cconfirms this is a good solution
- circfill(e.pos.x, e.pos.y, 2, 11)
+ circfill(ep.x, ep.y, 2, 11)
  circfill(tp.x, tp.y, 2, 8)
 end
 )
