@@ -31,6 +31,7 @@ __lua__
 
 #include libs/ecs.lua
 #include libs/1-vectors.lua
+#include libs/debug.lua
 
 function _init()
  sw, sh = 128,128
@@ -45,7 +46,9 @@ function _init()
    ur=create_vector(1,-1),
    dr=create_vector(1,1)
  }
- dir={"u", "d", "l", "r", "stationary", "ul", "dl", "ur", "dr"}
+ -- a table of directions rotating in sync with pico-8's anticlockwise trig functions:
+ -- makes % math easier when changing directions
+ dir={"r", "ur", "u", "ul", "l", "dl", "d", "dr"}
  captions = {txt_lines={}, color = 7}
  init_world()
 end
@@ -71,7 +74,7 @@ function init_world()
  add(world, center)
  -- populate world with critters
  spawn_fly(10)
- spawn_frog(10)
+ spawn_frog(1)
 end
 
 
@@ -112,7 +115,13 @@ end
 -- draw each critter according to its particulars
 draw_position = system({"pos"},
 function(e)
- if (e.visible) e:draw()
+ if (e.visible) then
+  if e.draw then
+   e:draw()
+  else
+   pset(e.pos.x, e.pos.y, 11)
+  end
+ end
 end
 )
 
@@ -157,13 +166,7 @@ function(e)
 end
 )
 
-play_psfx = function(s)
- local patch = s.patch or 0
- local prob = s.probability or 0
- if rnd(prob)<=1 then
-  sfx(patch)
- end
-end
+
 
 
 -- add object accelerations to velocities
@@ -181,7 +184,9 @@ end
 )
 
 -->8
--- animals
+-- animal definitions and behavior
+
+
 
 -- spawn_fly(n) to add n flies to the world
 #include animals/housefly.lua
@@ -189,6 +194,16 @@ end
 --spawn_frog(n) to add n frogs to the world
 #include animals/frog.lua
 
+-- play an animal's sfx with a given probability
+-- this is actually a great function for ECS to handle,
+-- at least in the idle case
+play_psfx = function(s)
+ local patch = s.patch or 0
+ local prob = s.probability or 0
+ if rnd(prob)<=1 then
+  sfx(patch)
+ end
+end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -207,4 +222,4 @@ __sfx__
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 000200001e330294102d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0007000001430014200132002430024300234003440054400844011230036401a2300042019220004100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0006000001430014200132002410024300231003440054100844011230036401a2300042019220004100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
