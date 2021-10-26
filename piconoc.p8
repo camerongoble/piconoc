@@ -54,7 +54,8 @@ function _init()
  chapters["forces"]={
   init=_forces_init,
   update=_forces_update,
-  hint="apply wind: ⬆️⬇️⬅️➡️\nrandom gust: ❎"
+  draw=_forces_draw,
+  hint="apply wind: ⬆️⬇️⬅️➡️\nrandom gust: ❎  no wind: 🅾️"
  }
  -- debug levels correspond to chapters in "nature of code"
  -- levels show debug info for topics in each chapter
@@ -81,6 +82,7 @@ end
 function _draw()
  cls()
  draw_position(world)
+ if chapters[state].draw then chapters[state].draw() end
  if debug_level then
   if debug_level == "vectors" then
    debug_velocity(world)
