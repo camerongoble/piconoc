@@ -7,7 +7,11 @@ function _forces_init()
   ball.mass=10-- different features: ball got mass.
   wind = {   -- wind will be a force within the world
     -- note: wind has no position. it's everywhere! And doesn't need drawing.
+<<<<<<< HEAD
     vel = create_random_vector(1/30),  -- one pixel per second per second
+=======
+    vel = create_random_vector(.1),
+>>>>>>> 2bf68f603b37bdeb0cc46a3baecab9b5180541a0
     acc = create_vector(0,0)
   }
   add(world, wind)
