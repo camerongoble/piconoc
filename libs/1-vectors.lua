@@ -115,18 +115,24 @@ function _limitmag(self,s)
   if m > s then self:set_magnitude(s) end
 end
 
+function _create_ball()
+  return {visible = true,
+          color = 12,
+          pos=create_vector(rnd(sw),rnd(sh)),
+          vel=create_vector(0,0),
+          acc=create_vector(0,0),
+          maxspeed=5,
+          boundary_behavior = "bounce",
+          target=center
+         }
+
+end
+
+
 function _vectors_init()
    -- new object: a little blue ball
- ball = {visible = true,
-         color = 12,
-         pos=create_vector(rnd(sw),rnd(sh)),
-         vel=create_vector(0,0),
-         acc=create_vector(0,0),
-         maxspeed=5,
-         boundary_behavior = "bounce",
-         target=center
-        }
- add(world, ball)
+ball = _create_ball()
+add(world, ball)
  center.visible = true
  center.color = 14
 end
