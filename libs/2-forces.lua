@@ -5,18 +5,28 @@
 function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
   ball.mass=10-- different features: ball got mass.
+  --in fact, let's make a ton of balls with random masses
+  for i=1,20 do
+    local b = _create_ball()
+    b.mass = rnd(20)
+    b.pos.y=64 -- tower of piza drop
+    -- wind affects mass, so expect small differences
+    add(world, b)
+  end
   wind = {   -- wind will be a force within the world
     -- note: wind has no position. it's everywhere! And doesn't need drawing.
-<<<<<<< HEAD
     vel = create_random_vector(1/30),  -- one pixel per second per second
-=======
-    vel = create_random_vector(.1),
->>>>>>> 2bf68f603b37bdeb0cc46a3baecab9b5180541a0
+    -- wind uses vel to impart its force onto things
+    -- this is so we can use apply_force() to change the
+    -- direction and power of the wind
     acc = create_vector(0,0)
   }
   add(world, wind)
-
-
+  gravity = { -- like wind, a force in the world
+    -- gravity has no position
+    vel =  create_vector(0, 1/30), -- down, one pixel per second
+    acc = create_vector(0,0)
+  }
 end
 
 -- apply wind force to each object in the world, accounting for mass
@@ -36,6 +46,21 @@ apply_wind = system({"mass", "acc"},
   end
 )
 
+apply_gravity = system({"mass", "acc"},
+  -- gravity looks exactly like wind in the world-wide case
+  -- it is a force that always pushes down
+  -- but unlike wind (and real world physics), it doesn't react to mass
+  -- this is so objects will always fall at the same rate
+  -- regardless of their mass!
+  -- (and so we don't have to simulate and equal/opposite
+  -- force on a "planet" object to balance everything)
+  function(e)
+    local gf = gravity.vel:copy_vector()
+    add_force(e, gf) -- this affects e.acc behind the scenes
+    -- objects with mass but without acc would error here.
+  end
+)
+
 
 function _forces_update()
   -- similar player control rules as before
@@ -51,6 +76,7 @@ function _forces_update()
   elseif btnp(➡️) then add_force(wind,r)
   end
   apply_wind(world)
+  apply_gravity(world)
 end
 
 function _forces_draw()
