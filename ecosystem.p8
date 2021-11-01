@@ -73,7 +73,7 @@ function init_world()
  add(world, origin)
  add(world, center)
  -- populate world with critters
- --spawn_fly(10)
+ spawn_fly(10)
  spawn_frog(1)
 end
 
@@ -186,9 +186,6 @@ function _bonk(e)
   e.pos.y = mid(1,e.pos.y,sh-1)
  end
 end
-
-
-
 
 -- add object accelerations to velocities
 resolve_velocity = system({"vel", "acc"},
