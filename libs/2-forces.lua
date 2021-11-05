@@ -6,12 +6,14 @@ function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
   ball.mass=10-- different features: ball got mass.
   ball.friction=.01 -- ball got friction too
+  ball.drag = .01 -- ball got drag
   --in fact, let's make a ton of balls with random masses and friction
   for i=1,20 do
     local b = _create_ball()
     b.mass = rnd(20)
-    b.friction = .01
-    b.pos.y=64 -- tower of piza drop
+    b.friction = rnd(.02)
+    b.drag = rnd(.02)
+    b.pos.y=32 -- tower of piza drop
     -- wind affects mass, so expect small differences
     add(world, b)
   end
@@ -78,10 +80,21 @@ apply_friction = system({"friction", "acc", "vel"},
     friction:scale_vector(-1)
     add_force(e, friction)
   end
-
-
 )
 
+apply_drag = system({"drag", "acc", "vel"},
+  -- drag is like friction, but it depends on surface area
+  function(e)
+    local rho = 1 -- density of the liquid
+    local vel_mag = e.vel:magnitude()
+    local area = 1 -- surface area of the object
+    local cod = e.drag
+    local vel = e.vel:copy_vector()
+    local drag_mag = -.5 * rho * vel_mag * vel_mag * area * cod
+    vel:set_magnitude(drag_mag)
+    add_force(e, vel)
+  end
+)
 
 function _forces_update()
   -- similar player control rules as before
@@ -96,9 +109,10 @@ function _forces_update()
   elseif btnp(⬅️) then add_force(wind,l)
   elseif btnp(➡️) then add_force(wind,r)
   end
-  apply_wind(world)
+  --apply_wind(world)
   apply_gravity(world)
-  apply_friction(world)
+  --apply_friction(world)
+  apply_drag(world)
 end
 
 function _forces_draw()
