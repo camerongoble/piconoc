@@ -112,6 +112,7 @@ function _limitmag(self,s)
   -- modifies/constrains a vector magnitude to a value
   -- no more than scale
   local m = self:magnitude()
+  local s = abs(s)
   if m > s then self:set_magnitude(s) end
 end
 
