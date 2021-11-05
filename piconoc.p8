@@ -81,8 +81,8 @@ end
 
 function _draw()
  cls()
- draw_position(world)
  if chapters[state].draw then chapters[state].draw() end
+ draw_position(world)
  if debug_level then
   if debug_level == "vectors" then
    debug_velocity(world)
