@@ -4,33 +4,39 @@
 
 function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
-  ball.mass=10-- different features: ball got mass.
-  ball.friction=.01 -- ball got friction too
-  ball.drag = .01 -- ball got drag
-  --in fact, let's make a ton of balls with random masses and friction
+  del(world, ball)
+  del(world, center)
+  -- for this, let's make a ton of balls with random masses and friction
   for i=1,20 do
     local b = _create_ball()
-    b.mass = rnd(20)
-    b.friction = rnd(.02)
-    b.drag = rnd(.02)
-    b.pos.y=32 -- tower of piza drop
+    b.color = 8
+    b.mass = b.pos.x / 5  -- mass increases left to right
+    b.radius = b.mass / 4 -- scale the circle representation
+    -- b.friction = rnd(.02) -- random material smoothness
+    b.drag = 1
+    b.pos.y=4 -- tower of piza drop
+    --b.vel=create_random_vector(1)
     -- wind affects mass, so expect small differences
     add(world, b)
   end
-  wind = {   -- wind will be a force within the world
+  wind = {   -- wind will be a force that affects the world
     -- note: wind has no position. it's everywhere! And doesn't need drawing.
-    vel = create_random_vector(1/30),  -- one pixel per second per second
+    vel = create_vector(0,0),  -- one pixel per second per second
     -- wind uses vel to impart its force onto things
     -- this is so we can use apply_force() to change the
     -- direction and power of the wind
     acc = create_vector(0,0)
   }
+  -- Add it to the world so it automagically updates
   add(world, wind)
   gravity = { -- like wind, a force in the world
     -- gravity has no position
     vel =  create_vector(0, 1/30), -- down, one pixel per second
     acc = create_vector(0,0)
   }
+  -- for drag, simulate a liquid for the balls to drop in "h" high
+  liquid_h = 64
+
 end
 
 -- apply wind force to each object in the world, accounting for mass
@@ -83,16 +89,19 @@ apply_friction = system({"friction", "acc", "vel"},
 )
 
 apply_drag = system({"drag", "acc", "vel"},
-  -- drag is like friction, but it depends on surface area
+-- drag is like friction, but it depends on surface area & velocity
   function(e)
-    local rho = 1 -- density of the liquid
-    local vel_mag = e.vel:magnitude()
-    local area = 1 -- surface area of the object
-    local cod = e.drag
-    local vel = e.vel:copy_vector()
-    local drag_mag = -.5 * rho * vel_mag * vel_mag * area * cod
-    vel:set_magnitude(drag_mag)
-    add_force(e, vel)
+    if e.pos.y >= liquid_h then  -- drag only if the entity is below the surface
+      local rho = .1 -- density of the liquid
+      local vel_mag = e.vel:magnitude()
+      local area = e.radius or 1 -- surface area of the object (to be elaborated on later)
+      local cod = e.drag
+      local vel = e.vel:copy_vector()
+      local drag_mag = -.5 * rho * vel_mag * vel_mag * area * cod
+      vel:set_magnitude(drag_mag)
+      vel:limit(vel_mag)
+      add_force(e, vel)
+    end
   end
 )
 
@@ -109,20 +118,25 @@ function _forces_update()
   elseif btnp(⬅️) then add_force(wind,l)
   elseif btnp(➡️) then add_force(wind,r)
   end
-  --apply_wind(world)
+  apply_wind(world)
   apply_gravity(world)
-  --apply_friction(world)
+  apply_friction(world)
   apply_drag(world)
 end
 
 function _forces_draw()
-  local flag = {pos = create_vector(100,100)}
-  -- Not an autonomous agent, just an indicator of wind speed
-  -- so, not added to world or part of any special update routines
-  circfill(flag.pos.x, flag.pos.y, 2, 12)
-  local w = wind.vel:copy_vector()
-  print(w.x..","..w.y, flag.pos.x-24, flag.pos.y+4, 12)
-  w:set_magnitude(8)       -- nice, long flag to wave
-  w:add_vector(flag.pos)  -- position for waving tip to end up
-  line(flag.pos.x, flag.pos.y, w.x, w.y)
+  -- liquid surface
+  rectfill(0,liquid_h, 128, 120 , 12)
+  -- flagpole, if there is wind
+  if wind.vel:magnitude() >0 then
+    local flag = {pos = create_vector(100,10)}
+    -- Not an autonomous agent, just an indicator of wind speed
+    -- so, not added to world or part of any special update routines
+    circfill(flag.pos.x, flag.pos.y, 2, 12)
+    local w = wind.vel:copy_vector()
+    print(w.x..","..w.y, flag.pos.x-24, flag.pos.y+4, 12)
+    w:set_magnitude(8)       -- nice, long flag to wave
+    w:add_vector(flag.pos)  -- position for waving tip to end up
+    line(flag.pos.x, flag.pos.y, w.x, w.y)
+  end
 end
