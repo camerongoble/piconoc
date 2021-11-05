@@ -5,10 +5,12 @@
 function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
   ball.mass=10-- different features: ball got mass.
-  --in fact, let's make a ton of balls with random masses
+  ball.friction=.01 -- ball got friction too
+  --in fact, let's make a ton of balls with random masses and friction
   for i=1,20 do
     local b = _create_ball()
     b.mass = rnd(20)
+    b.friction = .01
     b.pos.y=64 -- tower of piza drop
     -- wind affects mass, so expect small differences
     add(world, b)
@@ -61,6 +63,25 @@ apply_gravity = system({"mass", "acc"},
   end
 )
 
+apply_friction = system({"friction", "acc", "vel"},
+  -- friction occurs when a collision happens
+  -- it is a force the operates in the direction opposite of motion
+  -- to dampen movement
+  function(e)
+    local mu =  e.friction
+    local normal = 1
+    -- normal is usually calculated along with gravity
+    -- as being perpendicular to motion
+    local frictionMag = mu*normal
+    local friction = e.vel:copy_vector()
+    friction:set_magnitude(frictionMag)
+    friction:scale_vector(-1)
+    add_force(e, friction)
+  end
+
+
+)
+
 
 function _forces_update()
   -- similar player control rules as before
@@ -77,6 +98,7 @@ function _forces_update()
   end
   apply_wind(world)
   apply_gravity(world)
+  apply_friction(world)
 end
 
 function _forces_draw()
