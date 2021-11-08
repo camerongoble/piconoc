@@ -29,8 +29,9 @@ function _forces_init()
   }
   -- Add it to the world so it automagically updates
   add(world, wind)
-  gravity = { -- like wind, a force in the world
-    -- gravity has no position
+  universal_gravity = { -- like wind, a universal force in the world
+    -- gravity has no position and attracts massive objects downward
+    -- could change vector for another direction
     vel =  create_vector(0, 1/30), -- down, one pixel per second
     acc = create_vector(0,0)
   }
@@ -56,7 +57,7 @@ apply_wind = system({"mass", "acc"},
   end
 )
 
-apply_gravity = system({"mass", "acc"},
+apply_universal_gravity = system({"mass", "acc"},
   -- gravity looks exactly like wind in the world-wide case
   -- it is a force that always pushes down
   -- but unlike wind (and real world physics), it doesn't react to mass
@@ -65,7 +66,7 @@ apply_gravity = system({"mass", "acc"},
   -- (and so we don't have to simulate and equal/opposite
   -- force on a "planet" object to balance everything)
   function(e)
-    local gf = gravity.vel:copy_vector()
+    local gf = universal_gravity.vel:copy_vector()
     add_force(e, gf) -- this affects e.acc behind the scenes
     -- objects with mass but without acc would error here.
   end
@@ -119,7 +120,7 @@ function _forces_update()
   elseif btnp(➡️) then add_force(wind,r)
   end
   apply_wind(world)
-  apply_gravity(world)
+  apply_universal_gravity(world)
   apply_friction(world)
   apply_drag(world)
 end
