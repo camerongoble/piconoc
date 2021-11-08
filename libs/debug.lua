@@ -1,9 +1,10 @@
 function printh_table(tbl, n)
   -- prints contents of a table, including subtables.
-  local offset = 0 or n
+  local offset = tonum(n) or 0
+  if (offset == 0) printh("~~~~~~~~~~~~~~~~~~~~")
   local o = ""
   for i=1,offset do
-    o = o.."."
+    o = o.."~~"
   end
   local fs = ""
   for k,v in pairs(tbl) do
@@ -16,6 +17,6 @@ function printh_table(tbl, n)
       printh(o..k..": "..tostr(v))
     end
   end
-  printh("functions:")
-  printh(fs)
+  -- printh("functions:")
+  -- printh(fs)
 end
