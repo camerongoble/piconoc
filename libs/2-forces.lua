@@ -4,10 +4,10 @@
 
 function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
-  del(world, ball)
+  del(world, ball) -- don't need it tho.
   del(world, center)
   -- for this, let's make a ton of balls with random masses and friction
-  for i=1,20 do
+  for i=1,2 do
     local b = _create_ball()
     b.color = 8
     b.mass = b.pos.x / 5  -- mass increases left to right
@@ -15,6 +15,7 @@ function _forces_init()
     -- b.friction = rnd(.02) -- random material smoothness
     b.drag = 1
     b.pos.y=4 -- tower of piza drop
+    b.newtonian = true -- turn on newtonian physics engine for mutual gravity and such
     --b.vel=create_random_vector(1)
     -- wind affects mass, so expect small differences
     add(world, b)
@@ -72,6 +73,59 @@ apply_universal_gravity = system({"mass", "acc"},
   end
 )
 
+apply_newtonian_gravity = system({"mass", "acc", "newtonian"},
+  -- newtonian gravity applies equal and opposite force between objects
+  -- based on their relative masses
+  -- the values here will probably need a lot of tweaking
+  -- and be at weird scales
+  -- just like the universe.
+  -- so authentic!
+  function(e)
+    -- this ECS-style function calls on all individual objects,
+    -- but doesn't help us communicate between objects.
+    -- So we'll do this in two parts:
+    -- Here, build a list of all newtonian objects affected by gravity
+    -- later in _update, go through the list
+    -- and apply gravity with the whole list in mind
+    -- So, initialize the list if needed
+    --if not gravity_objects then gravity_objects = {} end
+    add(gravity_objects, e)
+    printh("~~~~~gravity objects: ~~~~~~~~~~~")
+    printh_table(gravity_objects)
+    printh("current entity:")
+    printh_table(e)
+  end
+)
+
+function resolve_newtonian_gravity(gravity_objects)
+  for obj1 in all(gravity_objects) do   -- each object
+    for obj2 in all(gravity_objects) do -- applies to all the other objects
+      printh("~~~~~~~~~~obj1~~~~~~~~~~~~")
+      printh_table(obj1)
+      printh("~~~~~~~~~~obj2~~~~~~~~~~~~")
+            printh_table(obj2)
+      if obj1 != obj2 then                -- except itself
+
+        local g = 1     -- gravitational constant
+        local m1 = obj1.mass
+        printh(m1)
+        local m2 = obj2.mass
+        local p1 = obj1.pos:copy_vector()
+        local p2 = obj2.pos:copy_vector()
+        local r_hat = p1:copy_vector()
+        r_hat:sub_vector(p2)
+        local r2 = r_hat:magnitude() * r_hat:magnitude()
+        r_hat:normalize()
+        local g_mag = (g * m1 * m2) / r2
+        local force = r_hat:scale_vector(g_mag) -- says newton
+        apply_force(obj1, force) -- action
+        -- the "equal and opposite" comes around when obj2 becomes obj1
+      end
+    end
+  end
+end
+
+
 apply_friction = system({"friction", "acc", "vel"},
   -- friction occurs when a collision happens
   -- it is a force the operates in the direction opposite of motion
@@ -121,6 +175,9 @@ function _forces_update()
   end
   apply_wind(world)
   apply_universal_gravity(world)
+  gravity_objects = {}
+  apply_newtonian_gravity(world)
+  resolve_newtonian_gravity(world)
   apply_friction(world)
   apply_drag(world)
 end
