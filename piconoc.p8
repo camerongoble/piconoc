@@ -6,6 +6,9 @@ __lua__
 -- a life-like system of autonomous
 -- agent behaviors for pico-8
 
+-- the little black dress of programming
+#include libs/debug.lua
+
 -- entity component systems (ecs)
 -- handles processing large
 -- collections of object agents
@@ -15,6 +18,7 @@ __lua__
 -- behavior code based on daniel
 -- schiffman's "nature of code"
 #include libs/1-vectors.lua
+#include libs/2-forces.lua
 
 -- note: piconoc uses state machines
 -- called "chapters" to
@@ -39,16 +43,26 @@ function _init()
  init_world()
 
  -- set up state machine with various name, init and update functions
- chapters = {}
- chapters["vectors"]={init=_vectors_init, update=_vectors_update, hint="apply forces: ⬆️⬇️⬅️➡️\nnudge rnd: ❎  nudge center: 🅾️"}
- state = "vectors"
+  state = "forces"
 
+ chapters = {}
+ chapters["vectors"]={
+  init=_vectors_init,
+  update=_vectors_update,
+  hint="apply force: ⬆️⬇️⬅️➡️\nnudge rnd: ❎  nudge center: 🅾️"
+ }
+ chapters["forces"]={
+  init=_forces_init,
+  update=_forces_update,
+  draw=_forces_draw,
+  hint="intensity: ⬆️⬇️  new force: ⬅️➡️\nrandom: ❎  zero: 🅾️"
+ }
  -- debug levels correspond to chapters in "nature of code"
  -- levels show debug info for topics in each chapter
  -- the game can be in one state while debugging processes from another
  -- very handy for seeing how topics interact across chapters
  -- see keey in chapters table above for possible values
- debug_level = "vectors"
+ debug_level = "forces"
 
  -- now start the whole thing off!
  chapters[state].init()
@@ -67,6 +81,7 @@ end
 
 function _draw()
  cls()
+ if chapters[state].draw then chapters[state].draw() end
  draw_position(world)
  if debug_level then
   if debug_level == "vectors" then
