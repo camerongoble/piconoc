@@ -49,13 +49,13 @@ function _init()
  chapters["vectors"]={
   init=_vectors_init,
   update=_vectors_update,
-  hint="apply forces: ⬆️⬇️⬅️➡️\nnudge rnd: ❎  nudge center: 🅾️"
+  hint="apply force: ⬆️⬇️⬅️➡️\nnudge rnd: ❎  nudge center: 🅾️"
  }
  chapters["forces"]={
   init=_forces_init,
   update=_forces_update,
   draw=_forces_draw,
-  hint="apply wind: ⬆️⬇️⬅️➡️\nrandom gust: ❎  no wind: 🅾️"
+  hint="intensity: ⬆️⬇️  new force: ⬅️➡️\nrandom: ❎  zero: 🅾️"
  }
  -- debug levels correspond to chapters in "nature of code"
  -- levels show debug info for topics in each chapter
