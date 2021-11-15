@@ -31,6 +31,15 @@ __lua__
 
 #include libs/ecs.lua
 #include libs/1-vectors.lua
+#include libs/2-forces.lua
+-- Challenge 2: Incorporate the concept of forces
+-- into your ecosystem. Try introducing other
+-- elements into the environment (food, a predator)
+-- for the creature to interact with. Does the
+-- creature experience attraction or repulsion to
+-- things in its world? Can you think more
+-- abstractly and design forces based on the
+-- creature’s desires or goals?
 #include libs/debug.lua
 
 function _init()
@@ -99,6 +108,8 @@ end
 function update_world()
  reset_acceleration(world)
  update_selves(world)
+ qualia_cache = cache_qualia(world)
+ enact_qualia(world, qualia_cache)
  resolve_velocity(world)
  resolve_position(world)
 end
@@ -204,13 +215,78 @@ end
 -->8
 -- animal definitions and behavior
 
-
-
 -- spawn_fly(n) to add n flies to the world
 #include animals/housefly.lua
 
 --spawn_frog(n) to add n frogs to the world
 #include animals/frog.lua
+
+-- objects attract and repel based on their qualia
+-- this function builds a table of objects of unique qualia types
+-- then objects can act all at once
+-- without having to do tons of repeated lookups per object
+cache_qualia = function(tbl)
+ local cache = {}
+ for v in all(tbl) do
+   local qk = v.qualia
+   if qk ~= nil then
+    if not(cache[qk]) then
+     cache[qk]={}
+    end
+    add(cache[qk], v)
+   end
+ end
+ return(cache)
+end
+
+enact_qualia = function(w, qc)
+ for v in all(world) do
+  if v.attracted_to then
+   for a in all(v.attracted_to) do
+    if qc[a] ~= nil then
+     for q in all(qc[q]) do
+      local f = qualia_force(v.pos, q.pos)
+      add_force(v, f)
+     end
+    end
+   end
+  end
+  if v.repelled_by then
+   for r in all(v.repelled_by) do
+    if qc[r] ~= nil then
+     for q in all(qc[r]) do
+       local f = qualia_force(v.pos, q.pos)
+       f:scale_vector(-1)
+       add_force(v, f)
+     end
+    end
+   end
+  end
+ end
+end
+
+qualia_force = function(pos1, pos2)
+ local g = 500 -- made-up repulsion factor
+ local p1 = pos1:copy_vector()
+ local p2 = pos2:copy_vector()
+ local r_hat = p1:copy_vector()
+ r_hat:sub_vector(p2)
+ local d = r_hat:magnitude()
+ r_hat:scale_vector(-1)
+ local r2 = r_hat:magnitude() * r_hat:magnitude()
+ if d >= 2 and d <= 32 then  -- apply force if they're not *too* close
+   -- otherwise, you get huge accelerations at micro-distances
+   -- or *too* far, otherwise they run from nothing.
+   r_hat:normalize()
+   local g_mag = g / r2
+   r_hat:scale_vector(g_mag)
+   return(r_hat) -- action
+ else
+   return(create_vector(0,0))
+ end
+end
+
+
 
 -- play an animal's sfx with a given probability
 -- this is actually a great function for ECS to handle,

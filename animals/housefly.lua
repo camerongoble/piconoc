@@ -1,10 +1,12 @@
 -- animal: housefly
--- features:
+-- chapter 1 features:
 -- flies are tiny.
 -- flies make annoying little sounds.
 -- flies randomly hover around in all directions.
 -- flies sometimes move fast, other times they linger.
 -- flies bonk against the window infuriatingly.
+-- chapter 2 features:
+-- flies are repelled by frogs
 
 function spawn_fly(n)
  for i = 1,n do
@@ -12,6 +14,7 @@ function spawn_fly(n)
   -- default fly
   -- adjust these parameters to make custom flies
   local f = {
+   qualia="fly",
    visible = true,
    color = rnd({5,13}), --some shade of grayish
    pos = create_vector(x, y),
@@ -22,6 +25,8 @@ function spawn_fly(n)
    -- (see resolve_position())
    boundary_behavior = "bonk",
    -- flies make annoying little sounds.
+   attracted_to={"poop"},
+   repelled_by={"frog"},
    sfx = {boundary={patch=9, probability=100}}, -- larger numbers mean lower probabilities to play the patch e.g. 1 in 10
    -- main loop functions
    draw = _draw_fly,

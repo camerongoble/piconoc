@@ -16,6 +16,7 @@ function spawn_frog(n)
     local frog_mindistance = 8
     local x,y = flr(rnd(sw)), flr(rnd(sh))
     local frog = {
+      qualia="frog",
       visible = true,
       color = rnd({3,4,11}), --mostly green, a little brown
       size = 3,
