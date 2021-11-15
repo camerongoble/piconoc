@@ -87,7 +87,31 @@ function _update_frog(self)
   if self.vel:magnitude() == 0 then
     -- no motion, so maybe start some?
     -- frogs mostly sit still.
-    if rnd(30)<=1 then
+
+    local movement_vector=create_vector(0,0)
+
+    -- Consider player input (allowing for diagonal movement)
+    if btn(0) then
+      movement_vector:add_vector(dir_vecs.l)
+    end
+    if btn(1) then
+      movement_vector:add_vector(dir_vecs.r)
+    end
+    if btn(2) then
+      movement_vector:add_vector(dir_vecs.u)
+    end
+    if btn(3) then
+      movement_vector:add_vector(dir_vecs.d)
+    end
+
+    -- If no player input, allow a chance of moving in a random direction
+    if movement_vector:magnitude()==0 and rnd(160)<=1 then
+      movement_vector:add_vector(dir_vecs[rnd(dir)])
+    end
+
+    -- Finally, do the movement
+    if movement_vector:magnitude()~=0 then
+      self.facing = movement_vector
       hop(self)
     else
       -- frogs make occasional ribbity sounds.
