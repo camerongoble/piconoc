@@ -34,7 +34,6 @@ function spawn_fly(n)
   }
   add(world, f)
  end
- add_caption("+"..n .. " housefiles")
 end
 
 function _draw_fly(self)

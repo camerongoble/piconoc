@@ -40,7 +40,6 @@ function spawn_frog(n)
     }
     add(world, frog)
   end
-  add_caption("+"..n .. " frogs")
 end
 
 function _draw_frog(self)
