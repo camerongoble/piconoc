@@ -17,10 +17,11 @@ function spawn_frog(n)
     local x,y = flr(rnd(sw)), flr(rnd(sh))
     local frog = {
       qualia="frog",
-      eats={"fly"},
+      eats={"fly", "worm"},
+      eating_range = 15, -- pixels
       visible = true,
       color = rnd({3,4,11}), --mostly green, a little brown
-      size = 3,
+      size = 3, -- pixels
       pos = create_vector(x, y),
       vel = create_vector(0, 0),
       acc = create_vector(0, 0),

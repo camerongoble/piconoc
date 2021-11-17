@@ -39,21 +39,21 @@ __lua__
 -- creature experience attraction or repulsion to
 -- things in its world? Can you think more
 -- abstractly and design forces based on the
--- creature’s desires or goals?
+-- creatureヌ█▥s desires or goals?
 #include libs/debug.lua
 
 function _init()
  sw, sh = 128,128
  dir_vecs={
-   u=create_vector(0,-1),
-   d=create_vector(0,1),
-   l=create_vector(-1,0),
-   r=create_vector(1,0),
-   stationary=create_vector(0,0),
-   ul=create_vector(-1,-1),
-   dl=create_vector(-1,1),
-   ur=create_vector(1,-1),
-   dr=create_vector(1,1)
+  u=create_vector(0,-1),
+  d=create_vector(0,1),
+  l=create_vector(-1,0),
+  r=create_vector(1,0),
+  stationary=create_vector(0,0),
+  ul=create_vector(-1,-1),
+  dl=create_vector(-1,1),
+  ur=create_vector(1,-1),
+  dr=create_vector(1,1)
  }
  -- a table of directions rotating in sync with pico-8's anticlockwise trig functions:
  -- makes % math easier when changing directions
@@ -166,7 +166,7 @@ end
 
 function _bounce(e)
  -- reflect perfectly back along the relevant axis
-  local s = e.sfx.boundary or {}
+ local s = e.sfx.boundary or {}
  if (e.pos.x >= sw-1 or e.pos.x <= 1) then
   e.vel.x *= -1
   e.pos.x = mid(1,e.pos.x,sw-1)
@@ -181,7 +181,7 @@ end
 
 function _wrap(e)
  -- pass through the edge
-  local s = e.sfx.boundary or {}
+ local s = e.sfx.boundary or {}
  if (e.pos.x >= sw-1) then e.pos.x = 1 play_psfx(s) end
  if (e.pos.x <= 1) then e.pos.x = sw-1 play_psfx(s) end
  if (e.pos.y >= sh-1) then e.pos.y = 1 play_psfx(s) end
@@ -190,7 +190,7 @@ end
 
 function _bonk(e)
  -- no passage, just stop right there
-  local s = e.sfx.boundary or {}
+ local s = e.sfx.boundary or {}
  if (e.pos.x >= sw-1) or (e.pos.x <= 1) or (e.pos.y >= sh-1) or (e.pos.y <= 1) then
   play_psfx(s)
   e.pos.x = mid(1,e.pos.x,sw-1)
@@ -228,13 +228,13 @@ end
 cache_qualia = function(tbl)
  local cache = {}
  for v in all(tbl) do
-   local qk = v.qualia
-   if qk ~= nil then
-    if not(cache[qk]) then
-     cache[qk]={}
-    end
-    add(cache[qk], v)
+  local qk = v.qualia
+  if qk ~= nil then
+   if not(cache[qk]) then
+    cache[qk]={}
    end
+   add(cache[qk], v)
+  end
  end
  return(cache)
 end
@@ -255,10 +255,53 @@ enact_qualia = function(w, qc)
    for r in all(v.repelled_by) do
     if qc[r] ~= nil then
      for q in all(qc[r]) do
-       local f = qualia_force(v.pos, q.pos)
-       f:scale_vector(-1)
-       add_force(v, f)
+      local f = qualia_force(v.pos, q.pos)
+      f:scale_vector(-1)
+      add_force(v, f)
      end
+    end
+   end
+  end
+  if v.eats then
+   -- build a buffet list of all edible things nearby:
+   local buffet = {}
+   for e in all(v.eats) do
+    if qc[e] ~= nil then
+     for q in all(qc[e]) do
+      add(buffet, q)
+     end
+    end
+   end
+   -- iterate through the buffet
+   -- compare two possible choices
+   -- reduce the buffet to a single closest item:
+   local p = v.pos:copy_vector()
+   while #buffet > 1 do
+    local meal1 = buffet[1].pos:copy_vector()
+    meal1:sub_vector(p)
+    local meal1d = meal1:magnitude()
+    local meal2 = buffet[2].pos:copy_vector()
+    meal2:sub_vector(p)
+    local meal2d = meal2:magnitude()
+    if meal1d > meal2d then
+     -- meal2 is closer, so delete meal1:
+     deli(buffet,1)
+    else
+     -- meal1 is closer or equal, so delete meal2:
+     deli(buffet,2)
+    end
+   end
+   -- now we have 1 or 0 meals, so we've made our choice
+   -- if a meal is in range, strike with tongue:
+   if #buffet == 1 then
+    local m = buffet[1].pos:copy_vector()
+    m:sub_vector(p)
+    local dm = m:magnitude()
+    if dm <= v.eating_range then
+     -- destroy thing from the world:
+     del(world, buffet[1])
+     -- critter reacts to having noms:
+     printh("****nom*****")
     end
    end
   end
@@ -275,14 +318,14 @@ qualia_force = function(pos1, pos2)
  r_hat:scale_vector(-1)
  local r2 = r_hat:magnitude() * r_hat:magnitude()
  if d >= 2 and d <= 32 then  -- apply force if they're not *too* close
-   -- otherwise, you get huge accelerations at micro-distances
-   -- or *too* far, otherwise they run from nothing.
-   r_hat:normalize()
-   local g_mag = g / r2
-   r_hat:scale_vector(g_mag)
-   return(r_hat) -- action
+  -- otherwise, you get huge accelerations at micro-distances
+  -- or *too* far, otherwise they run from nothing.
+  r_hat:normalize()
+  local g_mag = g / r2
+  r_hat:scale_vector(g_mag)
+  return(r_hat) -- action
  else
-   return(create_vector(0,0))
+  return(create_vector(0,0))
  end
 end
 
@@ -298,6 +341,7 @@ play_psfx = function(s)
   sfx(patch)
  end
 end
+
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
