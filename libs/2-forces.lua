@@ -2,6 +2,10 @@
 -- Chapter 2: Forces
 -- see: https://natureofcode.com/book/chapter-2-forces/
 
+-- requires 1-vectors.lua
+-- but pico doesn't allow embedded #includes
+-- so remember that for main.p8!
+
 function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
   del(world, ball) -- don't need it tho.
