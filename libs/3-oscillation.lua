@@ -17,10 +17,10 @@ function _oscillation_init()
 end
 
 function _oscillation_update()
-  -- ⬆️⬇️❎🅾️
+  -- ⬅️➡️⬆️⬇️❎🅾️
   if osc_to_demo == "angle" then
     if (btnp(⬅️)) baton:rotate_by(-.01)
-    if (btnp(➡️)) baton:rotate_by(.01)
+    if (btnp(➡️)) baton:rotate_by( .01)
   end
 end
 
@@ -63,7 +63,6 @@ end
 function _vo_rotate_by(self, tau)
   local t = tau or 0
   self.angle += t
-  self.angle = self.angle
   self:rotate_to(self.angle)
 end
 
