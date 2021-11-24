@@ -17,8 +17,10 @@ __lua__
 
 -- behavior code based on daniel
 -- schiffman's "nature of code"
+chapters = {}
 #include libs/1-vectors.lua
 #include libs/2-forces.lua
+#include libs/3-oscillation.lua
 
 -- note: piconoc uses state machines
 -- called "chapters" to
@@ -43,20 +45,10 @@ function _init()
  init_world()
 
  -- set up state machine with various name, init and update functions
-  state = "forces"
+  state = "oscillation"
 
- chapters = {}
- chapters["vectors"]={
-  init=_vectors_init,
-  update=_vectors_update,
-  hint="apply force: ⬆️⬇️⬅️➡️\nnudge rnd: ❎  nudge center: 🅾️"
- }
- chapters["forces"]={
-  init=_forces_init,
-  update=_forces_update,
-  draw=_forces_draw,
-  hint="intensity: ⬆️⬇️  new force: ⬅️➡️\nrandom: ❎  zero: 🅾️"
- }
+
+
  -- debug levels correspond to chapters in "nature of code"
  -- levels show debug info for topics in each chapter
  -- the game can be in one state while debugging processes from another
