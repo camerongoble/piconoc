@@ -54,18 +54,28 @@ function _pvo_draw(self)
   line(self.points[1].x+ox, self.points[1].y+oy)
 end
 
-apply_angular_velocity = system({"angle", "angle_v"}, function(e)
+apply_angular_velocity = system({"angle", "angle_vel"}, function(e)
   -- keeps anything with an angle spinning
-  -- for demonstration animations
-  printh(e.angle_v)
-  e:rotate_by(e.angle_v)
+  -- for demonstration animation
+  e:rotate_by(e.angle_vel)
 end)
+
+apply_angular_acceleration = system({"angle", "angle_vel", "angle_acc"},
+function(e)
+  e.angle_vel += e.angle_acc
+  e.angle_acc = 0             -- zero out at the beginning of each frame
+end
+)
+
+function _pv_add_angular_force(self, f_scalar)
+  f = f_scalar or 0
+  self.angle_acc += f
+end
 
 draw_polyvectors = system({"angle", "draw"}, function(e)
   if (e.visible) e:draw()
 end
 )
-
 
 function create_polyvector_object(table_of_vectors)
   -- a polygonal object that can move and freely rotate
@@ -75,10 +85,12 @@ function create_polyvector_object(table_of_vectors)
     shape = table_of_vectors or {},
     points = table_of_vectors or {},
     -- rotation in pico-8 turns (aka: tau):
-    angle = 0,
-    angle_v = 0,
+    angle = 0,    --scalar for angle
+    angle_vel = 0,  --scalar for angular velocity
+    angle_acc = 0,  --scalar for angular acceleration
     scale = 1,
     origin = create_vector(0,0),
+    add_angular_force = _pv_add_angular_force,
     rotate_by = _pvo_rotate_by,
     rotate_to = _pvo_rotate_to,
     locate = _pvo_locate,
@@ -99,9 +111,10 @@ end
 function _oscillation_update()
   -- ⬅️➡️⬆️⬇️❎🅾️
   if osc_to_demo == "angle" then
-    if (btnp(⬅️)) baton.angle_v += -.01
-    if (btnp(➡️)) baton.angle_v += .01
+    if (btnp(⬅️)) baton:add_angular_force(-.01)
+    if (btnp(➡️)) baton:add_angular_force( .01)
   end
+  apply_angular_acceleration(world)
   apply_angular_velocity(world)
 end
 
@@ -111,7 +124,7 @@ function _oscillation_draw()
   local p = print(osc_to_demo, 0, 110, 7)
   local ps = ""
   local as = ((baton.angle * 100) \ 1) /100
-  if osc_to_demo == "angle" then ps = ": ".. as .. " angle_v :".. baton.angle_v end
+  if osc_to_demo == "angle" then ps = ":".. as .. " a_v:".. baton.angle_vel .. " a_a:"..baton.angle_acc end
   print(ps, p+2, 110)
 end
 
