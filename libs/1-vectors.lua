@@ -30,12 +30,13 @@ function create_random_vector(limit)
   return create_vector(lx, ly)
 end
 
-function add_force(e,fv)
+function add_force(e,f_vec)
   -- adds force vector to an entity's acceleration
   -- simple function written here for code readability
   -- can be called multiple times per frame
   -- forces combine to single acceleration
-  e.acc:add_vector(fv)
+  local f = f_vec or create_vector(0,0)
+  e.acc:add_vector(f)
 end
 
 function printh_vec(v,t)
