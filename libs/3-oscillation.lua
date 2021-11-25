@@ -30,12 +30,12 @@ function _pvo_rotate_to(self, tau)
     local xo, yo = p.x, p.y
     add(self.points, create_vector((xo*c)-(yo*s), (xo*s)+(yo*c)))
   end
+  self.angle = tau
 end
 
 function _pvo_rotate_by(self, tau)
   local t = tau or 0
-  self.angle += t
-  self:rotate_to(self.angle)
+  self:rotate_to(self.angle + tau)
 end
 
 function _pvo_locate(self, x,y)
@@ -113,6 +113,8 @@ function _oscillation_update()
   if osc_to_demo == "angle" then
     if (btnp(⬅️)) baton:add_angular_force(-.01)
     if (btnp(➡️)) baton:add_angular_force( .01)
+    if (btnp(🅾️)) baton:rotate_to(0) baton.angle_vel = 0
+    if (btnp(❎)) baton:rotate_to(0) baton.angle_vel = (rnd(2) -1)/100
   end
   apply_angular_acceleration(world)
   apply_angular_velocity(world)
@@ -124,7 +126,7 @@ function _oscillation_draw()
   local p = print(osc_to_demo, 0, 110, 7)
   local ps = ""
   local as = ((baton.angle * 100) \ 1) /100
-  if osc_to_demo == "angle" then ps = ":".. as .. " a_v:".. baton.angle_vel .. " a_a:"..baton.angle_acc end
+  if (osc_to_demo == "angle") ps = ":".. as .. " angle vel:".. baton.angle_vel
   print(ps, p+2, 110)
 end
 
