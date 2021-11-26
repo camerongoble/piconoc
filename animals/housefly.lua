@@ -11,27 +11,35 @@
 function spawn_fly(n)
  for i = 1,n do
   local x,y = flr(rnd(sw)), flr(rnd(sh))
+  -- the following definitions are game-specific
+  -- they define the particular flyness of flies
   -- default fly
   -- adjust these parameters to make custom flies
   local f = {
    qualia="fly",
    visible = true,
    color = rnd({5,13}), --some shade of grayish
-   pos = create_vector(x, y),
-   vel = create_vector(0, 0),
-   acc = create_vector(0,0),
-   maxspeed = rnd(1), --always in pixels per frame
-   -- flies bonk against the window infuriatingly.
-   -- (see resolve_position())
-   boundary_behavior = "bonk",
-   -- flies make annoying little sounds.
    attracted_to={"poop"},
    repelled_by={"frog"},
+     -- flies make annoying little sounds.
    sfx = {boundary={patch=9, probability=100}}, -- larger numbers mean lower probabilities to play the patch e.g. 1 in 10
    -- main loop functions
    draw = _draw_fly,
    update = _update_fly
   }
+  -- the following definitions are for systemic movement
+  -- they take advantage of the ECS framework for
+  -- locating and moving objects :
+  local attr = {
+    pos = create_vector(x, y),
+    vel = create_vector(0, 0),
+    acc = create_vector(0,0),
+    maxspeed = rnd(1), --always in pixels per frame
+    -- flies bonk against the window infuriatingly.
+    -- (see resolve_position())
+    boundary_behavior = "bonk"
+  }
+  f = bestow_movement(f, attr)
   add(world, f)
  end
 end

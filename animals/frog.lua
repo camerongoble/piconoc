@@ -10,11 +10,14 @@
 -- frogs bounce against the boundaries.
 
 function spawn_frog(n)
+  printh("spawning frog")
   for i = 1,n do
     -- frogs tend to go in rapid bursts, but not often
     local frog_maxspeed = 3
     local frog_mindistance = 8
     local x,y = flr(rnd(sw)), flr(rnd(sh))
+    -- the following definitions are game-specific
+    -- they define the particular froggyness of frogs
     local frog = {
       qualia="frog",
       eats={"fly", "worm"},
@@ -22,22 +25,29 @@ function spawn_frog(n)
       visible = true,
       color = rnd({3,4,11}), --mostly green, a little brown
       size = 3, -- pixels
-      pos = create_vector(x, y),
-      vel = create_vector(0, 0),
-      acc = create_vector(0, 0),
       facing = dir_vecs[rnd(dir)]:copy_vector(),
-      maxspeed = rnd(frog_maxspeed)+frog_maxspeed, --100%-150% px per frame
       hopdist = rnd(frog_mindistance)+frog_mindistance, -- 100%-150%
       time_to_recovery = rnd(300),
-      -- frogs bounce against the boundaries.
-      -- (see resolve_position())
-      boundary_behavior = "bounce",
       -- main loop functions
       draw = _draw_frog,
       update = _update_frog,
       -- frogs make occasional ribbity soundss.
       sfx={idle={patch=10, probability = 600}}
     }
+    -- the following definitions are for systemic movement
+    -- they take advantage of the ECS framework for
+    -- locating and moving objects :
+    local attrs = {
+      pos = create_vector(x, y),
+      vel = create_vector(0, 0),
+      acc = create_vector(0, 0),
+      maxspeed = rnd(frog_maxspeed)+frog_maxspeed, --100%-150% px per frame,
+      -- frogs bounce against the boundaries.
+      -- (see resolve_position())
+      boundary_behavior = "bounce"
+    }
+    -- make sure the frog object can use common movement operations:
+    frog = bestow_movement(frog, attrs)
     add(world, frog)
   end
 end
