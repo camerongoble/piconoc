@@ -118,16 +118,22 @@ function _limitmag(self,s)
 end
 
 function _create_ball()
-  return {visible = true,
-          color = 12,
-          pos=create_vector(rnd(sw),rnd(sh)),
-          vel=create_vector(0,0),
-          acc=create_vector(0,0),
-          maxspeed=5,
-          boundary_behavior = "bounce",
-          target=center
-         }
+  local b = {}
+  b = enable_movement(b)
+  return b
+end
 
+function bestow_movement(table, attr_table)
+  local t = table or {}
+  local a = attr_table or {}
+  t.visible = a.visible or true
+  t.color = t.color or 12
+  t.pos= a.pos or create_vector(rnd(sw),rnd(sh))
+  t.vel = a.vel or create_vector(0,0)
+  t.acc = a.acc or create_vector(0,0)
+  t.maxspeed = a.maxspeed or 5
+  t.boundary_behavior = a.boundary_behavior or "bounce"
+  t.target = a.target or center
 end
 
 

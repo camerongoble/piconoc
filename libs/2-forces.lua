@@ -6,6 +6,18 @@
 -- but pico doesn't allow embedded #includes
 -- so remember that for main.p8!
 
+function bestow_linear_physics(table, attr_table)
+  t = table or {}
+  t.mass = attr_table.mass or 0  -- mass increases left to right
+  t.radius = attr_table.radius or 1  -- mass and size are the same, for now,
+  -- but some forces like drag are affected by size seperate from mass
+  t.friction = attr_table.friction or 0 --  material smoothness
+  t.newtonian = attr_table.newtonian or false -- turn on newtonian physics engine for mutual gravity and such
+  return t
+end
+
+
+
 function _forces_init()
   _vectors_init()     -- similar world: got a ball, got a center, got an origin
   del(world, ball) -- don't need it tho.
@@ -13,13 +25,10 @@ function _forces_init()
   -- for this, let's make a set of balls
   for i=1,5 do
     local b = _create_ball()
+    b = bestow_linear_physics(b)
     b.color = 8
-    b.mass = b.pos.x / 24  -- mass increases left to right
-    b.radius = b.mass  -- mass and size are the same, for now,
-    -- but some forces like drag are affected by size seperate from mass
-    b.friction = 0 --  material smoothness
-    b.newtonian = false -- turn on newtonian physics engine for mutual gravity and such
-    b.vel=create_vector(0,0)
+    b.mass = b.pos.x / 24  -- for this demo, make small to large across the screen
+    b.radius = b.mass
     add(world, b)
   end
   universal_wind = {   -- wind will be a force that affects the world

@@ -42,6 +42,12 @@ function _pvo_locate(self, x,y)
   self.origin = create_vector(x, y)
 end
 
+function _pvo_translate(self,x,y)
+  self.origin.x += x
+  self.origin.y += y
+end
+
+
 function _pvo_draw(self)
   -- start a fresh line
   local ox, oy = self.origin.x, self.origin.y
@@ -84,25 +90,33 @@ function create_polyvector_object(table_of_vectors)
     -- mutable points that actually get drawn:
     shape = table_of_vectors or {},
     points = table_of_vectors or {},
-    -- rotation in pico-8 turns (aka: tau):
-    angle = 0,    --scalar for angle
-    angle_vel = 0,  --scalar for angular velocity
-    angle_acc = 0,  --scalar for angular acceleration
-    scale = 1,
-    origin = create_vector(0,0),
-    add_angular_force = _pv_add_angular_force,
-    rotate_by = _pvo_rotate_by,
-    rotate_to = _pvo_rotate_to,
-    locate = _pvo_locate,
     visible = true,
     draw = _pvo_draw
   }
   return obj
 end
 
+function bestow_anglular_physics(table)
+  local t = table or {}
+  -- rotation in pico-8 turns (aka: tau):
+  t.angle = 0    --scalar for angle
+  t.angle_vel = 0  --scalar for angular velocity
+  t.angle_acc = 0  --scalar for angular acceleration
+  t.scale = 1
+  t.origin = create_vector(0,0)
+  t.add_angular_force = _pv_add_angular_force
+  t.rotate_by = _pvo_rotate_by
+  t.rotate_to = _pvo_rotate_to
+  t.locate = _pvo_locate
+  t.translate = _pvo_translate
+  return t
+end
+
+
 function _oscillation_init()
   local baton_shape = {create_vector(10,0), create_vector(-10,0)}
   baton = create_polyvector_object(baton_shape)
+  baton = bestow_anglular_physics(baton)
   baton:locate(64,64)
   add(world, baton)
   osc_to_demo = "angle"
@@ -115,6 +129,7 @@ function _oscillation_update()
     if (btnp(➡️)) baton:add_angular_force( .01)
     if (btnp(🅾️)) baton:rotate_to(0) baton.angle_vel = 0
     if (btnp(❎)) baton:rotate_to(0) baton.angle_vel = (rnd(2) -1)/100
+    -- if (btnp(⬆️)) ocs_to_demo = "pos.x spin"
   end
   apply_angular_acceleration(world)
   apply_angular_velocity(world)
