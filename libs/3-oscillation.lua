@@ -96,7 +96,7 @@ function create_polyvector_object(table_of_vectors)
   return obj
 end
 
-function bestow_anglular_physics(table)
+function bestow_angular_physics(table)
   local t = table or {}
   -- rotation in pico-8 turns (aka: tau):
   t.angle = 0    --scalar for angle
@@ -116,7 +116,7 @@ end
 function _oscillation_init()
   local baton_shape = {create_vector(10,0), create_vector(-10,0)}
   baton = create_polyvector_object(baton_shape)
-  baton = bestow_anglular_physics(baton)
+  baton = bestow_angular_physics(baton)
   baton:locate(64,64)
   add(world, baton)
   osc_to_demo = "angle"
