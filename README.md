@@ -4,7 +4,7 @@ Emergent ecosystem behaviors for agents in Pico-8.  Based on Daniel Schiffman's 
 
 Hi!  I want to simulate flies and frogs and lizards and spaceships and such in PICO-8.  And I want to do so in ways that give surprising results.  PLUS I want to refine my understanding of Entity Component Systems (ECS).  This repo holds my efforts to do all those things.  
 
-This is a learning project in process: bulky, proof-of-concept level programming.  An optimized version suitable for projects will be released upon completion. 
+This is a learning project in process: bulky, proof-of-concept level programming.  An optimized version suitable for projects will be released upon completion.
 
 Play in browser here: https://www.lexaloffle.com/bbs/?tid=45052
 
@@ -24,9 +24,9 @@ Daniel Schiffman has a fantastic video series (and a free online book!) called N
 This project is divided into chapters that follow the book.  These are in /libs. The code is liberally commented and played with in piconoc.p8 as proofs-of-concept.
 
 Topics of interest (some, but not all implemented yet):
-* Vectors
-* Forces
-* Occilations
+* Vectors (implemented!)
+* Forces  (implemented!)
+* Oscilations (in progress!)
 * Particle systems
 * Autonomous Agents
 * Cellular Autonoma
@@ -36,6 +36,8 @@ Topics of interest (some, but not all implemented yet):
 piconoc uses the simple PECS system by Jess Telford (https://github.com/jesstelford/pecs).  
 
 ECS gets around Pico-8's avoidance of proper objects in a really clever way.  Basically, if a table has a field that contains a particular type of data, like a position, then a system can be set up that acts on all that data in the same way.  Adding new, independently acting entities is as simple as creating a new entry in a table.  It seems a perfect fit for a project like this.
+
+Each chapter has a related bestow() function.  Bestow_movement(), bestow_linear_physics(), bestow_angular_physics(), and so on as we go.  By applying these functions to a table, that table magically gains powers from that chapter in a standardized way.  This frees you up to focus on defining your game objects and not worrying about how they're going to deal with physics!  Behold the power of ECS!
 
 ## Ecosystem
 By harnessing the systems that ECS makes possible with the emergent properties behind Nature of Code, I want to be able to create little ecosystems where virtual critters can live and interact without a lot of deliberate AI backing them up.  Some will be predators, some will be prey, others will just hang around.  
