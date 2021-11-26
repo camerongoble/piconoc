@@ -2,7 +2,9 @@
 ## PICO-8 + Nature of Code + ECS = piconoc.
 Emergent ecosystem behaviors for agents in Pico-8.  Based on Daniel Schiffman's "Nature of Code". Uses Entity Component Systems.
 
-Hi!  I want to simulate flies and frogs and lizards and spaceships and such in PICO-8.  And I want to do so in ways that give surprising results.  PLUS I want to refine my understanding of Entity Component Systems (ECS).  This repo holds my efforts to do all those things.  This is a learning project in process.
+Hi!  I want to simulate flies and frogs and lizards and spaceships and such in PICO-8.  And I want to do so in ways that give surprising results.  PLUS I want to refine my understanding of Entity Component Systems (ECS).  This repo holds my efforts to do all those things.  
+
+This is a learning project in process: bulky, proof-of-concept level programming.  An optimized version suitable for projects will be released upon completion. 
 
 Play in browser here: https://www.lexaloffle.com/bbs/?tid=45052
 
