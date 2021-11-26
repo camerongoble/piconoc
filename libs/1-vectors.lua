@@ -126,20 +126,21 @@ end
 function bestow_movement(table, attr_table)
   local t = table or {}
   local a = attr_table or {}
-  t.visible = a.visible or true
-  t.color = t.color or 12
-  t.pos= a.pos or create_vector(rnd(sw),rnd(sh))
+  t.pos= a.pos or create_vector(64,64)
   t.vel = a.vel or create_vector(0,0)
   t.acc = a.acc or create_vector(0,0)
   t.maxspeed = a.maxspeed or 5
   t.boundary_behavior = a.boundary_behavior or "bounce"
   t.target = a.target or center
+  return t
 end
 
 
 function _vectors_init()
    -- new object: a little blue ball
 ball = _create_ball()
+ball.visible = true
+ball.color = 12
 add(world, ball)
  center.visible = true
  center.color = 14
