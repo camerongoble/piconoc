@@ -7,7 +7,7 @@
 -- but pico doesn't allow embedded #includes
 -- so remember that for main.p8!
 
-function polar_to_cos_sin(tau)
+function angle_to_cos_sin(tau)
   local t = tau or 0
   local cosine = cos(tau)
   local sine = -sin(tau)  -- negative due to pico's coord system
@@ -17,14 +17,14 @@ end
 function polar_to_cartesian_vec(tau, radius)
   local t = tau or 0
   local r = radius or 1
-  local c,s = polar_to_cos_sin(t)
+  local c,s = angle_to_cos_sin(t)
   local x = c * r
   local y = s * r
   return create_vector(x, y)
 end
 
 function _pvo_rotate_to(self, tau)
-  local c,s = polar_to_cos_sin(tau)
+  local c,s = angle_to_cos_sin(tau)
   self.points = {}
   for p in all(self.shape) do
     local xo, yo = p.x, p.y
