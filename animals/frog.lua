@@ -10,7 +10,6 @@
 -- frogs bounce against the boundaries.
 
 function spawn_frog(n)
-  printh("spawning frog")
   for i = 1,n do
     -- frogs tend to go in rapid bursts, but not often
     local frog_maxspeed = 3
