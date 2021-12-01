@@ -79,13 +79,13 @@ function _pvo_draw(self)
   line(self.points[1].x+ox, self.points[1].y+oy)
 end
 
-apply_angular_velocity = system({"angle", "angle_vel"}, function(e)
+resolve_angular_velocity = system({"angle", "angle_vel"}, function(e)
   -- keeps anything with an angle spinning
   -- for demonstration animation
   e:rotate_by(e.angle_vel)
 end)
 
-apply_angular_acceleration = system({"angle", "angle_vel", "angle_acc"},
+resolve_angular_acceleration = system({"angle", "angle_vel", "angle_acc"},
 function(e)
   e.angle_vel += e.angle_acc
   e.angle_acc = 0             -- zero out at the beginning of each frame
@@ -131,15 +131,45 @@ function bestow_angular_physics(table)
   return t
 end
 
-
-function _oscillation_init()
+function init_angle()
+  osc_to_demo = "angle"
   local baton_shape = {create_vector(10,0), create_vector(-10,0)}
   baton = create_polyvector_object(baton_shape)
   baton = bestow_movement(baton)
   baton = bestow_angular_physics(baton)
-  baton.vel = create_vector(rnd(2), rnd(2))
+  baton.vel = create_vector(rnd(2)-1, rnd(2)-1)
+  baton.visible = true
+  world = {}
   add(world, baton)
-  osc_to_demo = "angle"
+end
+
+function init_posxspin()
+  osc_to_demo = "pos.x spin"
+  world = {}
+  -- make a central planet with gravity:
+  local planet = bestow_movement()
+  planet = bestow_linear_physics(planet, {mass = 10, radius = 2, friction = 0, netwonian = true})
+  planet.visible = true
+  planet.color = 7
+  --add(world, planet)
+  -- add a gaggle of satellites that spin around:
+  for i = 1,10 do
+    local baton_shape = {create_vector(5,0), create_vector(-5,0)}
+    baton = create_polyvector_object(baton_shape)
+    baton = bestow_movement(baton)
+    baton = bestow_linear_physics(baton) -- this is different from the baton in angle state
+    baton = bestow_angular_physics(baton)
+    baton.vel = create_vector(rnd(2)-1, rnd(2)-1)
+    baton.visible = true
+    add(world, baton)
+  end
+
+
+end
+
+
+function _oscillation_init()
+  init_posxspin()
 end
 
 function _oscillation_update()
@@ -149,12 +179,14 @@ function _oscillation_update()
     if (btnp(➡️)) baton:add_angular_force( .01)
     if (btnp(🅾️)) baton:rotate_to(0) baton.angle_vel = 0
     if (btnp(❎)) baton:rotate_to(0) baton.angle_vel = (rnd(2) -1)/100
-    -- if (btnp(⬆️)) ocs_to_demo = "pos.x spin"
+    if (btnp(⬆️)) init_posxspin()
+  elseif osc_to_demo == "pos.x spin" then
+    if (btnp(⬇️)) init_angle()
   end
   resolve_velocity(world)
   resolve_position(world)
-  apply_angular_acceleration(world)
-  apply_angular_velocity(world)
+  resolve_angular_acceleration(world)
+  resolve_angular_velocity(world)
 end
 
 function _oscillation_draw()
@@ -162,8 +194,10 @@ function _oscillation_draw()
   rectfill(0, 109, 128, 128, 0)
   local p = print(osc_to_demo, 0, 110, 7)
   local ps = ""
-  local as = ((baton.angle * 100) \ 1) /100
-  if (osc_to_demo == "angle") ps = ":".. as .. " angle vel:".. baton.angle_vel
+  if (osc_to_demo == "angle") then
+    local as = ((baton.angle * 100) \ 1) /100
+    ps = ":".. as .. " angle vel:".. baton.angle_vel
+  end
   print(ps, p+2, 110)
 end
 
