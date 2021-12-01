@@ -92,6 +92,12 @@ function(e)
 end
 )
 
+flyby_rotate = system({"angle", "pos"}, function(e)
+  local a = rescale(e.pos.x, 1, 128, 0 ,1)
+  e.angle = a
+  end
+)
+
 function _pv_add_angular_force(self, f_scalar)
   f = f_scalar or 0
   self.angle_acc += f
@@ -148,28 +154,33 @@ function init_posxspin()
   world = {}
   -- make a central planet with gravity:
   local planet = bestow_movement()
-  planet = bestow_linear_physics(planet, {mass = 10, radius = 2, friction = 0, netwonian = true})
+  planet = bestow_linear_physics(planet, {mass = 10, radius = 2, friction = 0, newtonian = true})
   planet.visible = true
   planet.color = 7
-  --add(world, planet)
+  planet.stationary = true
+  add(world, planet)
   -- add a gaggle of satellites that spin around:
   for i = 1,10 do
     local baton_shape = {create_vector(5,0), create_vector(-5,0)}
     baton = create_polyvector_object(baton_shape)
     baton = bestow_movement(baton)
-    baton = bestow_linear_physics(baton) -- this is different from the baton in angle state
+    baton = bestow_linear_physics(baton, {mass = 1, radius = 1, friction = 0, newtonian = true}) -- this is different from the baton in angle state
     baton = bestow_angular_physics(baton)
     baton.vel = create_vector(rnd(2)-1, rnd(2)-1)
     baton.visible = true
     add(world, baton)
   end
-
-
 end
+
+
 
 
 function _oscillation_init()
   init_posxspin()
+  newtonian_gravity = {
+      g = .04,
+      nudge = .01
+    }
 end
 
 function _oscillation_update()
@@ -181,8 +192,13 @@ function _oscillation_update()
     if (btnp(❎)) baton:rotate_to(0) baton.angle_vel = (rnd(2) -1)/100
     if (btnp(⬆️)) init_posxspin()
   elseif osc_to_demo == "pos.x spin" then
+    flyby_rotate(world)
     if (btnp(⬇️)) init_angle()
   end
+
+  gravity_objects = {}
+  apply_newtonian_gravity(world)
+  resolve_newtonian_gravity()
   resolve_velocity(world)
   resolve_position(world)
   resolve_angular_acceleration(world)
