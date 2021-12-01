@@ -132,6 +132,7 @@ function bestow_movement(table, attr_table)
   t.maxspeed = a.maxspeed or 5
   t.boundary_behavior = a.boundary_behavior or "bounce"
   t.target = a.target or center
+  t.stationary = false
   return t
 end
 
