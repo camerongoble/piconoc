@@ -7,12 +7,14 @@
 -- so remember that for main.p8!
 
 function bestow_linear_physics(table, attr_table)
+  -- attr_table: {mass = scal, radius = scal, friction = scal, netwonian = bool}
   t = table or {}
-  t.mass = attr_table.mass or 0  -- mass increases left to right
-  t.radius = attr_table.radius or 1  -- mass and size are the same, for now,
+  a = attr_table or {}
+  t.mass = a.mass or 0  -- mass increases left to right
+  t.radius = a.radius or 1  -- mass and size are the same, for now,
   -- but some forces like drag are affected by size seperate from mass
-  t.friction = attr_table.friction or 0 --  material smoothness
-  t.newtonian = attr_table.newtonian or false -- turn on newtonian physics engine for mutual gravity and such
+  t.friction = a.friction or 0 --  material smoothness
+  t.newtonian = a.newtonian or false -- turn on newtonian physics engine for mutual gravity and such
   return t
 end
 
