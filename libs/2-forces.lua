@@ -7,7 +7,7 @@
 -- so remember that for main.p8!
 
 function bestow_linear_physics(table, attr_table)
-  -- attr_table: {mass = scal, radius = scal, friction = scal, netwonian = bool}
+  -- attr_table: {mass = scal, radius = scal, friction = scal, newtonian = bool}
   t = table or {}
   a = attr_table or {}
   t.mass = a.mass or 0  -- mass increases left to right
