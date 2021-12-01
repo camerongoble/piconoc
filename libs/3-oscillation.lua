@@ -7,6 +7,19 @@
 -- but pico doesn't allow embedded #includes
 -- so remember that for main.p8!
 
+function rescale(sample, sample_start, sample_end, range_start, range_end)
+  -- maps a sample number from a given range to a proportional number in a new range
+  -- useful for scaling non-unit-size functions into screen-sized results
+  local s = sample
+  local ss = sample_start or 0
+  local se = sample_end or 1
+  local rs = range_start or 0
+  local re = range_end or 1
+  local m = (re - rs) / (se - ss)
+  return rs + m * (s - ss)
+end
+
+
 function angle_to_cos_sin(tau)
   local t = tau or 0
   local cosine = cos(tau)
@@ -24,6 +37,7 @@ function polar_to_cartesian_vec(tau, radius)
 end
 
 function _pvo_rotate_to(self, tau)
+  tau = tau % 1 or 0
   local c,s = angle_to_cos_sin(tau)
   self.points = {}
   for p in all(self.shape) do
@@ -51,7 +65,12 @@ end
 function _pvo_draw(self)
   -- start a fresh line
   local ox, oy = self.origin.x, self.origin.y
-  line(self.points[1].x+oy, self.points[1].y+oy, self.points[1].x+ox, self.points[1].y+oy)
+  if self.pos then
+    ox += self.pos.x
+    oy += self.pos.y
+  end
+
+  line(self.points[1].x+ox, self.points[1].y+oy, self.points[1].x+ox, self.points[1].y+oy)
   for i = 2,#self.points do
     -- connect the rest of the dots
     line(self.points[i].x+ox, self.points[i].y+oy)
@@ -107,7 +126,7 @@ function bestow_angular_physics(table)
   t.add_angular_force = _pv_add_angular_force
   t.rotate_by = _pvo_rotate_by
   t.rotate_to = _pvo_rotate_to
-  t.locate = _pvo_locate
+  t.offset = _pvo_offset
   t.translate = _pvo_translate
   return t
 end
@@ -116,8 +135,9 @@ end
 function _oscillation_init()
   local baton_shape = {create_vector(10,0), create_vector(-10,0)}
   baton = create_polyvector_object(baton_shape)
+  baton = bestow_movement(baton)
   baton = bestow_angular_physics(baton)
-  baton:locate(64,64)
+  baton.vel = create_vector(rnd(2), rnd(2))
   add(world, baton)
   osc_to_demo = "angle"
 end
@@ -131,6 +151,8 @@ function _oscillation_update()
     if (btnp(❎)) baton:rotate_to(0) baton.angle_vel = (rnd(2) -1)/100
     -- if (btnp(⬆️)) ocs_to_demo = "pos.x spin"
   end
+  resolve_velocity(world)
+  resolve_position(world)
   apply_angular_acceleration(world)
   apply_angular_velocity(world)
 end
