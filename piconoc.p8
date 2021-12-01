@@ -116,6 +116,7 @@ end)
 -- add object velocities to positions
 resolve_position = system({"pos", "vel"},
 function(e)
+ if e.stationary then return end
  e.pos:add_vector(e.vel)
  local b = e.boundary_behavior or "none"
  if b=="wrap" then -- pass through the edge
